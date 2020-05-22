@@ -30,17 +30,10 @@ else
   unset SSD 
 fi
 
-mkdir /newdir
-/usr/local/etc/emulab/mkextrafs.pl -f /newdir
-
 # install packages for each distro type
 if [[ "$(cat /etc/redhat-release)" =~ CentOS.* ]]; then
   yum -y update
-  yum -y install pciutils
-  yum groupinstall -y "Infiniband Support"
-  yum install -y infiniband-diags perftest libibverbs-utils librdmacm-utils libipathverbs libmlx4
-  yum install -y librdmacm-devel libibverbs-devel numactl numactl-devel libaio-devel libevent-devel
-
+  
 elif [[ "$(cat /etc/lsb-release | grep DISTRIB_ID)" =~ .*Ubuntu.* ]]; then
 
   export DEBIAN_FRONTEND=noninteractive
@@ -57,8 +50,6 @@ elif [[ "$(cat /etc/lsb-release | grep DISTRIB_ID)" =~ .*Ubuntu.* ]]; then
 
   # add your current user to group libvirtd
   sudo adduser `id -un` libvirtd
-
-  mkdir /newdir/spot
 
 fi
 
