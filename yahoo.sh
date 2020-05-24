@@ -41,41 +41,16 @@ elif [[ "$(cat /etc/lsb-release | grep DISTRIB_ID)" =~ .*Ubuntu.* ]]; then
   # for building
   apt-get update
   apt-get install -y screen,gcc,g++,python,dstat,git,build-essential,libssl-dev,ccache,libelf-dev,libqt4-dev,pkg-config,ncurses-dev,autoconf,automake,libpcre3-dev,libevent-dev,zlib1g-dev,vim,python-pip,openjdk-8-jdk,ant-optional,cmake,python3-dev,python3-pip,python3-venv,leiningen
-mkdir /newdir
-mkdir /newdir/tmp
 
-####modify /etc/profile.d/mavenenv.sh
-touch /etc/profile.d/mavenenv.sh
-cat <<EOF | tee -a /etc/profile.d/mavenenv.sh
-export PATH=/opt/maven/bin:${PATH}
-EOF
-sudo chmod +x /etc/profile.d/mavenenv.sh
-source /etc/profile.d/mavenenv.sh
-
-#install YCSB
-cd ~/
-git clone https://github.com/yuhong-zhong/YCSB.git
-cd YCSB
-git checkout spot_memory
-
-# build with Redis binding
-mvn -pl site.ycsb:redis-binding -am clean package
-# build with Memcached binding
-mvn -pl site.ycsb:memcached-binding -am clean package
-# build with RocksDB binding
-mvn -pl site.ycsb:rocksdb-binding -am clean package
-
-cd ~/
-
-cat <<EOF | tee -a /etc/sysctl.conf 
-vm.overcommit_memory=1
-EOF
-
-sudo sysctl vm.overcommit_memory=1
-
-echo never > /sys/kernel/mm/transparent_hugepage/enabled
-echo never > /sys/kernel/mm/transparent_hugepage/defrag
-
+  python3 -m venv env
+  source env/bin/activate
+  python -m pip install -U pip
+  python -m pip install -U setuptools
+  pip install tensorflow==1.5.0  # higher version might not work in VM
+  
+  git clone https://github.com/yuhong-zhong/HW3.git
+  cd HW3/cifar10_estimator
+  g++ atomic_write.cpp -o atomic_write -std=c++14
 fi
 
 # allow pdsh to use ssh

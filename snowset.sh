@@ -41,6 +41,7 @@ elif [[ "$(cat /etc/lsb-release | grep DISTRIB_ID)" =~ .*Ubuntu.* ]]; then
   # for building
   apt-get update
   apt-get install -y screen,gcc,g++,python,dstat,git,build-essential,libssl-dev,ccache,libelf-dev,libqt4-dev,pkg-config,ncurses-dev,autoconf,automake,libpcre3-dev,libevent-dev,zlib1g-dev,vim,python-pip,openjdk-8-jdk,ant-optional,cmake,python3-dev,python3-pip,python3-venv,leiningen
+
 mkdir /newdir
 mkdir /newdir/tmp
 
@@ -65,6 +66,12 @@ mvn -pl site.ycsb:memcached-binding -am clean package
 # build with RocksDB binding
 mvn -pl site.ycsb:rocksdb-binding -am clean package
 
+#install rocksdb
+cd ~/
+git clone https://github.com/facebook/rocksdb.git
+cd rocksdb/
+make all -j8
+
 cd ~/
 
 cat <<EOF | tee -a /etc/sysctl.conf 
@@ -76,6 +83,10 @@ sudo sysctl vm.overcommit_memory=1
 echo never > /sys/kernel/mm/transparent_hugepage/enabled
 echo never > /sys/kernel/mm/transparent_hugepage/defrag
 
+cd ~/
+git clone https://github.com/yuhong-zhong/streaming-benchmarks.git
+cd streaming-benchmarks
+apt-get remove -y openjdk-11-jre-headless && ./stream-bench.sh SETUP
 fi
 
 # allow pdsh to use ssh
